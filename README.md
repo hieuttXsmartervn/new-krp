@@ -1,42 +1,75 @@
-# IKAK Members Portal – Frontend First
+# IKAK Members Portal
 
-Frontend-first implementation of the IKAK Members Portal. The initial delivery covers the authentication and membership application screens based on the supplied legacy screenshots.
+Frontend-first implementation of the IKAK Members Portal using Next.js App Router. The current UI includes sign-in, membership application, photo preview and password-reset flows. Member administration routes are placeholders pending analysis of the existing .NET workflows.
 
-## Current scope
+## Stack and requirements
 
-- Sign In (`/login`)
-- Membership Application (`/register`)
-- Photo selection and crop-preview modal (client-side UI)
-- Password Reset (`/forgot-password`)
-
-Member Approval and Member Details are planned next. Backend integration is intentionally deferred.
-
-## Stack
-
-- Next.js 15 / React 19
-- TypeScript
-- Tailwind CSS 4
-- Lucide React (available for subsequent UI components)
+- Node.js 20+
+- pnpm 10+ (the repository declares pnpm 10.12.1)
+- Next.js 15, React 19, TypeScript, Tailwind CSS 4
+- shadcn/ui component conventions with Radix UI primitives
 
 ## Run locally
 
-Requirements: Node.js 20+ and pnpm 10+
+On Windows, double-click `run.bat` to start the portal.
 
-```bash
-pnpm install
-pnpm dev
+Or run this from the project folder:
+
+```powershell
+npm run dev
 ```
 
-Open http://localhost:3000.
+Install workspace dependencies once before the first run:
 
-## Frontend-only behavior
+```powershell
+corepack pnpm install
+```
 
-- Forms perform browser-side validation only.
-- Registration and login submissions show demo feedback; no account is created and no authentication is performed.
-- Password reset does not send an email.
-- Photo selection and rotation preview run in the browser. The current crop modal is a visual crop-preview flow; final image cropping/upload will be connected to the backend/storage implementation later.
-- No PostgreSQL connection is required.
+Open http://localhost:3000. Copy `.env.example` to `.env.local` when configuring local environment values. No database is required for the current frontend demo.
 
-## Architecture notes
+## Project structure
 
-Keep API calls behind service modules when backend integration is introduced. Do not place API requests directly inside presentation components. Existing PostgreSQL schema and .NET business rules must be inspected before implementing backend workflows.
+```text
+apps/web/src/
+  app/                 App Router pages, layouts, and route-level error UI
+  components/          Shared presentation components
+  features/            Feature-specific screens and state
+  lib/                 Shared infrastructure (for example, API client)
+packages/shared/       Contracts shared between workspace packages
+docs/                  Scope and implementation checklists
+```
+
+Keep route files focused on routing and metadata. Put screen behavior in its feature, reuse UI only when it has a stable cross-feature contract, and keep network access in `lib`/service modules rather than presentation components.
+
+Shared shadcn/ui components live in `apps/web/src/components/ui/`; design tokens are defined in `apps/web/src/app/globals.css` and component-generation settings in `apps/web/components.json`. Prefer these shared controls over one-off buttons, form fields, selects, dialogs, and feedback styles.
+
+## Quality checks
+
+```bash
+pnpm format
+pnpm format:check
+pnpm lint
+pnpm typecheck
+pnpm build
+pnpm check
+```
+
+Run `pnpm check` before opening a pull request. Add or update focused tests when a test runner is introduced or when the change affects test-covered behavior.
+
+## Current behavior and constraints
+
+- Authentication, account creation, and password reset are demos only. The UI does not authenticate users, create accounts, or send emails.
+- Membership application performs browser-side validation and demo feedback only. It does not submit data to an API.
+- Photo selection and rotation are local previews; no image upload or persistent crop is performed.
+- Member registration, approval, and details routes are placeholders. Do not implement approval decisions, ownership checks, or business rules until they are mapped from the existing .NET implementation.
+- No PostgreSQL connection or schema changes are part of this frontend.
+
+## Environment and operations
+
+`NEXT_PUBLIC_API_BASE_URL` is the browser-visible API base URL. Values with the `NEXT_PUBLIC_` prefix are embedded in client bundles and must never contain secrets. Configure production values in the deployment platform; do not commit `.env.local` files.
+
+The current workspace uses pnpm. Keep the package manager and its lockfile consistent; do not introduce a second package-manager lockfile. Production backend integration requires an agreed API contract, environment configuration, security review, and deployment-specific smoke tests.
+
+## Adding a screen
+
+Use the step-by-step checklist in [`docs/feature-screen-checklist.md`](./docs/feature-screen-checklist.md) for new routes and feature screens.

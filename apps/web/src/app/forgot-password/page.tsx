@@ -1,5 +1,5 @@
-'use client';
-import Link from 'next/link';
-import {useState} from 'react';
-import {Brand} from '@/components/auth/Brand';
-export default function ForgotPasswordPage(){const [email,setEmail]=useState('');const [submitted,setSubmitted]=useState(false);return <main className="auth-shell"><section className="auth-card" style={{maxWidth:420,background:'#fff',padding:28,marginTop:36,boxShadow:'0 5px 22px #17203318',borderRadius:6}}><Brand/><h1 style={{fontSize:22,fontWeight:500,margin:'28px 0 8px'}}>Password Reset</h1><p className="muted-note" style={{marginBottom:24}}>Forgotten your password? Enter your email address below.</p>{submitted?<div className="alert alert-success">If the email is registered, password reset instructions will be sent. This is a frontend demonstration.</div>:<form onSubmit={e=>{e.preventDefault();setSubmitted(true)}} style={{display:'grid',gap:20}}><div className="field"><label htmlFor="reset-email">Email Address</label><input id="reset-email" className="control" type="email" required value={email} onChange={e=>setEmail(e.target.value)} placeholder="name@example.com"/></div><div style={{display:'flex',gap:12}}><Link href="/login" className="btn btn-outline" style={{flex:1}}>BACK TO LOGIN</Link><button className="btn" style={{background:'#9b27b0',color:'#fff',flex:1}} type="submit">SUBMIT</button></div></form>}</section></main>}
+import { ForgotPasswordForm } from '@/features/auth/components/forgot-password-form';
+
+export default function ForgotPasswordPage() {
+  return <ForgotPasswordForm />;
+}
